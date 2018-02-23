@@ -66,7 +66,7 @@ class BooksViewController: UIViewController {
         
         URLSession.shared.dataTask(with: url) { (data, resp, error) in
             
-            print("ok")
+            print("download books")
             guard let data = data else {
                 return
             }
@@ -81,12 +81,20 @@ class BooksViewController: UIViewController {
                     self.books = countItem
                 }
                 
-                DispatchQueue.main.async {
+                //
+                DispatchQueue.main.async(execute: { () -> Void in
                     self.tableView.reloadData()
-                }
+                    //self.refreshControl?.endRefreshing()
+                })
+                
+                //
+                
+                //DispatchQueue.main.async {
+                  //  self.tableView.reloadData()
+               // }
                 
                 
-                print("ok")
+                print("Books VC")
                 
             } catch let error {
                 print(error)
@@ -142,22 +150,38 @@ extension BooksViewController: UITableViewDataSource {
                     
                 }
             }
+            
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+            
             if let linkImage = volumeInfo.imageLinks?.smallThumbnail {
-                print(linkImage)
-                //let imageView = UIImageView(frame: CGRect(x: 50.0, y: 50.0, width: 50.0, height: 50.0))
-                if let url = URL(string: linkImage) {
-                    do {
-                        let data = try Data(contentsOf: url) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
-                        cell?.imageView?.image = UIImage(data: data)
-                        print("ok")
-                    } catch {
-                        print("image not exist", error)
+                    print(linkImage)
+                
+                    if let url = URL(string: linkImage) {
+                        do {
+                            let data = try Data(contentsOf: url) //make sure your image in this url does exist, otherwise unwrap in a if let check / try-catch
+                            DispatchQueue.main.async {
+                            cell?.imageView?.image = UIImage(data: data)
+                            print("cellForRowAt")
+                            }
+                        } catch {
+                            print("image not exist", error)
+                            
+                        }
                         
                     }
+                
+                    
+                    
                     
                 }
                 
+                
+                
+                
             }
+        
+            
             
             cell?.authorLabel.text = authors
         }
